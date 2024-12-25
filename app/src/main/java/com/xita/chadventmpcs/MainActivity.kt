@@ -1,10 +1,12 @@
 package com.xita.chadventmpcs
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,11 +31,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.xita.chadventmpcs.pages.LoginPage
 import com.xita.chadventmpcs.ui.theme.ChadventMPCSTheme
 import kotlinx.coroutines.launch
 
@@ -44,11 +51,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChadventMPCSTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    OnboardingScreen(onFinish = { }, paddingValues = innerPadding)
-//                    Greeting(
-//                        name = "Android",
-//                        modifier = Modifier.padding(innerPadding)
+
+//                    LoginPage(innerPadding)
+//                    OnboardingScreen(onFinish = {}, paddingValues = innerPadding)
 //                    )
+
+                    NavigationGraph(rememberNavController(),innerPadding)
                 }
             }
         }
@@ -56,13 +64,20 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun OnboardingScreen(onFinish: () -> Unit, paddingValues: PaddingValues) {
+fun Mytest(innerPaddingValues: PaddingValues) {
+    Button(onClick = {
+        Log.i("MYINFO", "nnfifbiobgiorbiorgbiogrbirgbegiroborei")
+    }) { }
+
+
+}
+
+@Composable
+fun OnboardingScreen(navController: NavHostController,onFinish: () -> Unit, paddingValues: PaddingValues) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { 3 })
     val pages = listOf(
-        R.raw.lottie_accounts,
-        R.raw.lottie_contact,
-        R.raw.lottie_news
+        R.raw.lottie_accounts, R.raw.lottie_contact, R.raw.lottie_news
     )
 
     Column(
@@ -70,12 +85,11 @@ fun OnboardingScreen(onFinish: () -> Unit, paddingValues: PaddingValues) {
             .fillMaxSize()
             .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
     ) {
+
         // Lottie animations in a pager
         HorizontalPager(
-            state = pagerState,
-            modifier = Modifier
+            state = pagerState, modifier = Modifier
                 .weight(0.8f)
 //                .background(Color.Blue)
                 .fillMaxWidth()
@@ -83,15 +97,17 @@ fun OnboardingScreen(onFinish: () -> Unit, paddingValues: PaddingValues) {
             OnboardingPage(animationResId = pages[page])
         }
 
-Box(Modifier.weight(0.2f)) {
-    Text(
-        "Plan trip to more than 90 countries",
-        modifier = Modifier.align(Alignment.Center),
-        fontSize = 30.sp,
-        textAlign = TextAlign.Center,
-        fontWeight = FontWeight.Bold
-    )
-}
+        Box(Modifier.weight(0.2f)) {
+            Text(
+                if (pagerState.currentPage == 0) "Easily access your account information"
+                else if (pagerState.currentPage == 1) "View and contact Chadvent members"
+                else "See important information with realtime notifications",
+                modifier = Modifier.align(Alignment.Center),
+                fontSize = 30.sp,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+            )
+        }
 
 
         // Navigation buttons
@@ -102,6 +118,7 @@ Box(Modifier.weight(0.2f)) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(onClick = {
+                Log.i("MYINFO", "bedubfdubdfbdsubduvfdusdvsdufvfd")
                 scope.launch { // Launch coroutine for scroll animation
                     if (pagerState.currentPage > 0) {
                         pagerState.animateScrollToPage(pagerState.currentPage - 1)
@@ -115,6 +132,9 @@ Box(Modifier.weight(0.2f)) {
             }
 
             Button(onClick = {
+                Log.i("MYINFO", "ddddddddddddddddddddddd")
+                Log.i("MYINFO - current", pagerState.currentPage.toString())
+                Log.i("MYINFO - size", pages.size.toString())
                 scope.launch {
                     if (pagerState.currentPage < pages.size - 1) {
                         pagerState.animateScrollToPage(pagerState.currentPage + 1)
@@ -133,20 +153,19 @@ Box(Modifier.weight(0.2f)) {
 fun OnboardingPage(animationResId: Int) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(animationResId))
     val progress by animateLottieCompositionAsState(
-        composition = composition,
-        iterations = LottieConstants.IterateForever
+        composition = composition, iterations = LottieConstants.IterateForever
     )
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .background(Color.Gray.copy(alpha = 0.2f) )
-            .fillMaxWidth().fillMaxSize()
+        modifier = Modifier.background(Color.Gray.copy(alpha = 0.2f))
+//            .fillMaxWidth()
+//            .fillMaxSize()
     ) {
         LottieAnimation(
             composition = composition,
             progress = progress,
-            modifier = Modifier.fillMaxSize()
+//            modifier = Modifier.fillMaxSize()
         )
     }
 }
@@ -162,10 +181,23 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     LottieAnimation(composition, iterations = LottieConstants.IterateForever)
 }
 
+@Composable
+fun NavigationGraph(navController: NavHostController, innerPaddingValues: PaddingValues) {
+    NavHost(
+        navController = navController,
+        startDestination = "onboardingScreen"
+    ) {
+        composable("onboardingScreen") { OnboardingScreen(navController,{navController.navigate("login")}, innerPaddingValues) }
+        composable("login") { LoginPage(navController, innerPaddingValues) }
+//        composable("signUp") { SignUpPage(navController, innerPaddingValues) }
+//        composable("addRecipe") { AddRecipePage(navController, innerPaddingValues) }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     ChadventMPCSTheme {
-        OnboardingScreen({}, PaddingValues(0.dp))
+        OnboardingScreen(navController = rememberNavController(),onFinish = {}, PaddingValues(0.dp))
     }
 }
