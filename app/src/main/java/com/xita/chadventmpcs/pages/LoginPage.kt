@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,98 +49,112 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun LoginPage(navController: NavController,innerPadding: PaddingValues) {
-    var  loginPageViewModel:LoginPageViewModel = viewModel()
-    Box(
-        Modifier
-            .padding(innerPadding)
-            .fillMaxSize()
-    ) {
+fun LoginPage(
+    navController: NavController, loginPageViewModel: LoginPageViewModel = viewModel()
+) {
+
+    Scaffold { innerPadding ->
         Box(
             Modifier
+                .padding(innerPadding)
                 .fillMaxSize()
-                .background(Color.Blue.copy(alpha = 0.5f))
-        ) {
-
-
-        }
-
-        Column(
-            Modifier
-                .fillMaxSize()
-                .fillMaxWidth()
         ) {
             Box(
                 Modifier
-                    .weight(0.3f)
-                    .fillMaxWidth()
+                    .fillMaxSize()
+                    .background(Color.Blue.copy(alpha = 0.5f))
             ) {
 
-                GlideImage(
-                    R.drawable.chadvent_logo, contentDescription = "", modifier = Modifier
-                        .align(
-                            Alignment.Center
-                        )
-                        .fillMaxSize(0.5f)
-                )
 
             }
 
-            Box(
+            Column(
                 Modifier
-                    .weight(0.7f)
-                    .clip(RoundedCornerShape(topEnd = 50.dp, topStart = 50.dp))
-                    .background(Color.White)
-
+                    .fillMaxSize()
                     .fillMaxWidth()
             ) {
-                LazyColumn(
+                Box(
                     Modifier
+                        .weight(0.3f)
                         .fillMaxWidth()
-                        .fillMaxSize()
-                        .padding(15.dp),
-                    verticalArrangement = Arrangement.Center
                 ) {
-                    item {
-                        Text(
-                            "Login to account",
-                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 35.sp),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
 
-                    items(1) {
-                        OutlinedTextField(
-                            value = "gyuyvyuy",
-                            onValueChange = {},
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 10.dp, bottom = 10.dp)
-                                .background(Color.Gray.copy(alpha = 0.3f))
-                        )
+                    GlideImage(
+                        R.drawable.chadvent_logo,
+                        contentDescription = "",
+                        modifier = Modifier
+                            .align(
+                                Alignment.Center
+                            )
+                            .fillMaxSize(0.5f)
+                    )
 
-                        OutlinedTextField(
-                            value = "pokoiyr",
-                            onValueChange = {},
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 10.dp, bottom = 10.dp)
-                                .background(Color.Gray.copy(alpha = 0.3f))
-                        )
+                }
 
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 10.dp)
-                                .clip(RoundedCornerShape(40))
-                                .background(Purple40)
+                Box(
+                    Modifier
+                        .weight(0.7f)
+                        .clip(RoundedCornerShape(topEnd = 50.dp, topStart = 50.dp))
+                        .background(Color.White)
+
+                        .fillMaxWidth()
+                ) {
+                    LazyColumn(
+                        Modifier
+                            .fillMaxWidth()
+                            .fillMaxSize()
+                            .padding(15.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        item {
+                            Text(
+                                "Login to account",
+                                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 35.sp),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        items(1) {
+                            OutlinedTextField(
+                                value = loginPageViewModel.username,
+                                onValueChange = { username ->
+                                    loginPageViewModel.usernameChange(
+                                        username
+                                    )
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 10.dp, bottom = 10.dp)
+                                    .background(Color.Gray.copy(alpha = 0.3f))
+                            )
+
+                            OutlinedTextField(
+                                value = loginPageViewModel.password,
+                                onValueChange = { password ->
+                                    loginPageViewModel.passwordChange(
+                                        password
+                                    )
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 10.dp, bottom = 10.dp)
+                                    .background(Color.Gray.copy(alpha = 0.3f))
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 10.dp)
+                                    .clip(RoundedCornerShape(40))
+                                    .background(Purple40)
 //                                .background(if (transparent) Color.Transparent else Purple40, shape = RoundedCornerShape(40))
-                                .border(3.dp, Purple40, RoundedCornerShape(40))
-                                .padding(12.dp)
-                                .clickable(onClick = {
-
-                                    loginPageViewModel.getMembers()
+                                    .border(3.dp, Purple40, RoundedCornerShape(40))
+                                    .padding(12.dp)
+                                    .clickable(onClick = {
+                                        loginPageViewModel.logUserIn()
+                                        navController.navigate("mainScreen")
+//                                    loginPageViewModel.getMembers()
 //                                    val members = remember { mutableStateListOf<Member>() }
 //                                    LaunchedEffect(Unit) {
 //                                        try {
@@ -153,17 +168,16 @@ fun LoginPage(navController: NavController,innerPadding: PaddingValues) {
 //                                            Log.e("NETWORK_ERROR", "Exception: ${e.localizedMessage}")
 //                                        }
 //                                    }
-                                }),
+                                    }),
 
-                            ) {
+                                ) {
 
-                            Text(
-                                "Login",
-                                color = Color.White,
-                                modifier = Modifier
-                                    .align(alignment = Alignment.Center),
-                                style = TextStyle(fontSize = 25.sp)
-                            )
+                                Text(
+                                    "Login",
+                                    color = Color.White,
+                                    modifier = Modifier.align(alignment = Alignment.Center),
+                                    style = TextStyle(fontSize = 25.sp)
+                                )
 
 //                            if (isLoading) CircularProgressIndicator(
 //                                modifier = Modifier
@@ -175,22 +189,27 @@ fun LoginPage(navController: NavController,innerPadding: PaddingValues) {
 //                                    .align(alignment = Alignment.Center),
 //                                style = TextStyle(fontSize = 25.sp)
 //                            )
-                        }
+                            }
 
-                        Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(checked = false, onCheckedChange = {})
-                            Text("Remember me", style = TextStyle(fontSize = 17.sp, ))
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(checked = false, onCheckedChange = {})
+                                Text("Remember me", style = TextStyle(fontSize = 17.sp))
+                            }
                         }
                     }
                 }
             }
         }
     }
+
 }
 
 
 @Preview(showBackground = true)
 @Composable
 fun LoginPagePreview() {
-    LoginPage(rememberNavController(), PaddingValues(0.dp))
+    LoginPage(rememberNavController())
 }

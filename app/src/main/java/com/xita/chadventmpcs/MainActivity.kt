@@ -17,7 +17,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +46,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.xita.chadventmpcs.pages.LoginPage
+import com.xita.chadventmpcs.pages.MainScreen
 import com.xita.chadventmpcs.ui.theme.ChadventMPCSTheme
 import kotlinx.coroutines.launch
 
@@ -50,14 +56,26 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ChadventMPCSTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//                Scaffold(
+//                    modifier = Modifier.fillMaxSize(),
+//                    bottomBar = { NavigationBar{
+//                        NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Default.Home, contentDescription = "")
+//                        })
+//
+//                        NavigationBarItem(selected = true, onClick = {}, icon = { Icon(Icons.Default.Home, contentDescription = "")
+//                        })
+//
+//                        NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Default.Home, contentDescription = "")
+//                        })
+//                    } }
+//
+//                ) { innerPadding ->
 
 //                    LoginPage(innerPadding)
 //                    OnboardingScreen(onFinish = {}, paddingValues = innerPadding)
 //                    )
-
-                    NavigationGraph(rememberNavController(),innerPadding)
-                }
+                    NavigationGraph(rememberNavController())
+//                }
             }
         }
     }
@@ -73,80 +91,84 @@ fun Mytest(innerPaddingValues: PaddingValues) {
 }
 
 @Composable
-fun OnboardingScreen(navController: NavHostController,onFinish: () -> Unit, paddingValues: PaddingValues) {
+fun OnboardingScreen(navController: NavHostController,onFinish: () -> Unit, ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { 3 })
     val pages = listOf(
         R.raw.lottie_accounts, R.raw.lottie_contact, R.raw.lottie_news
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-
-        // Lottie animations in a pager
-        HorizontalPager(
-            state = pagerState, modifier = Modifier
-                .weight(0.8f)
-//                .background(Color.Blue)
-                .fillMaxWidth()
-        ) { page ->
-            OnboardingPage(animationResId = pages[page])
-        }
-
-        Box(Modifier.weight(0.2f)) {
-            Text(
-                if (pagerState.currentPage == 0) "Easily access your account information"
-                else if (pagerState.currentPage == 1) "View and contact Chadvent members"
-                else "See important information with realtime notifications",
-                modifier = Modifier.align(Alignment.Center),
-                fontSize = 30.sp,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
-
-        // Navigation buttons
-        Row(
+    Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxSize()
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Button(onClick = {
-                Log.i("MYINFO", "bedubfdubdfbdsubduvfdusdvsdufvfd")
-                scope.launch { // Launch coroutine for scroll animation
-                    if (pagerState.currentPage > 0) {
-                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+
+            // Lottie animations in a pager
+            HorizontalPager(
+                state = pagerState, modifier = Modifier
+                    .weight(0.8f)
+//                .background(Color.Blue)
+                    .fillMaxWidth()
+            ) { page ->
+                OnboardingPage(animationResId = pages[page])
+            }
+
+            Box(Modifier.weight(0.2f)) {
+                Text(
+                    if (pagerState.currentPage == 0) "Easily access your account information"
+                    else if (pagerState.currentPage == 1) "View and contact Chadvent members"
+                    else "See important information with realtime notifications",
+                    modifier = Modifier.align(Alignment.Center),
+                    fontSize = 30.sp,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+
+            // Navigation buttons
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(onClick = {
+                    Log.i("MYINFO", "bedubfdubdfbdsubduvfdusdvsdufvfd")
+                    scope.launch { // Launch coroutine for scroll animation
+                        if (pagerState.currentPage > 0) {
+                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                        }
                     }
-                }
 //                if (pagerState.currentPage > 0) {
 //                    pagerState.animateScrollToPage(pagerState.currentPage - 1)
 //                }
-            }) {
-                Text("Previous")
-            }
-
-            Button(onClick = {
-                Log.i("MYINFO", "ddddddddddddddddddddddd")
-                Log.i("MYINFO - current", pagerState.currentPage.toString())
-                Log.i("MYINFO - size", pages.size.toString())
-                scope.launch {
-                    if (pagerState.currentPage < pages.size - 1) {
-                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                    } else {
-                        onFinish()
-                    }
+                }) {
+                    Text("Previous")
                 }
-            }) {
-                Text(if (pagerState.currentPage < pages.size - 1) "Next" else "Finish")
+
+                Button(onClick = {
+                    Log.i("MYINFO", "ddddddddddddddddddddddd")
+                    Log.i("MYINFO - current", pagerState.currentPage.toString())
+                    Log.i("MYINFO - size", pages.size.toString())
+                    scope.launch {
+                        if (pagerState.currentPage < pages.size - 1) {
+                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        } else {
+                            onFinish()
+                        }
+                    }
+                }) {
+                    Text(if (pagerState.currentPage < pages.size - 1) "Next" else "Finish")
+                }
             }
         }
     }
+
+
 }
 
 @Composable
@@ -182,13 +204,14 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun NavigationGraph(navController: NavHostController, innerPaddingValues: PaddingValues) {
+fun NavigationGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "onboardingScreen"
+        startDestination = "mainScreen"
     ) {
-        composable("onboardingScreen") { OnboardingScreen(navController,{navController.navigate("login")}, innerPaddingValues) }
-        composable("login") { LoginPage(navController, innerPaddingValues) }
+        composable("onboardingScreen") { OnboardingScreen(navController,{navController.navigate("login")}) }
+        composable("login") { LoginPage(navController) }
+        composable(route = "mainScreen") { MainScreen(navController)  }
 //        composable("signUp") { SignUpPage(navController, innerPaddingValues) }
 //        composable("addRecipe") { AddRecipePage(navController, innerPaddingValues) }
     }
@@ -198,6 +221,6 @@ fun NavigationGraph(navController: NavHostController, innerPaddingValues: Paddin
 @Composable
 fun GreetingPreview() {
     ChadventMPCSTheme {
-        OnboardingScreen(navController = rememberNavController(),onFinish = {}, PaddingValues(0.dp))
+        OnboardingScreen(navController = rememberNavController(),onFinish = {})
     }
 }
