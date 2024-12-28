@@ -15,6 +15,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -23,13 +25,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.xita.chadventmpcs.R
+import com.xita.chadventmpcs.viewModels.ChadventDatabaseViewModel
 import com.xita.chadventmpcs.viewModels.MainScreenViewModel
 
 @Composable
 fun MainScreen(
     navController: NavController,
-    mainScreenViewModel: MainScreenViewModel = viewModel()
+    mainScreenViewModel: MainScreenViewModel = viewModel(),
+    chadventDatabaseViewModel: ChadventDatabaseViewModel
 ) {
+
     Scaffold(
         bottomBar = {
             NavigationBar(containerColor = Color.Blue.copy(0.2f)) {
@@ -92,18 +97,18 @@ fun MainScreen(
         }) { innerPadding ->
 
 
-        MainScreenContent(innerPadding, mainScreenViewModel)
+        MainScreenContent(innerPadding, mainScreenViewModel,chadventDatabaseViewModel)
     }
 }
 
 @Composable
-fun MainScreenContent(innerPaddingValues: PaddingValues, mainScreenViewModel: MainScreenViewModel) {
+fun MainScreenContent(innerPaddingValues: PaddingValues, mainScreenViewModel: MainScreenViewModel,chadventDatabaseViewModel: ChadventDatabaseViewModel) {
     if (mainScreenViewModel.homeSelected) {
         HomePage(innerPaddingValues)
     } else if (mainScreenViewModel.transactionsSelected) {
         TransactionsPage(innerPaddingValues)
     } else if (mainScreenViewModel.contactsSelected) {
-        ContactsPage(innerPaddingValues)
+        ContactsPage(innerPaddingValues,chadventDatabaseViewModel)
     } else {
         SettingsPage(innerPaddingValues)
     }

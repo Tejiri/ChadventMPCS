@@ -45,15 +45,23 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.xita.chadventmpcs.dataSource.local.CHadventLocalDatabaseProvider
 import com.xita.chadventmpcs.pages.LoginPage
 import com.xita.chadventmpcs.pages.MainScreen
 import com.xita.chadventmpcs.ui.theme.ChadventMPCSTheme
+import com.xita.chadventmpcs.viewModels.ChadventDatabaseViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+
+        val database = CHadventLocalDatabaseProvider.getDatabase(applicationContext)
+        val memberDao = database.memberDao()
+
+        val chadventDatabaseViewModel = ChadventDatabaseViewModel(memberDao)
         setContent {
             ChadventMPCSTheme {
 //                Scaffold(
@@ -74,24 +82,17 @@ class MainActivity : ComponentActivity() {
 //                    LoginPage(innerPadding)
 //                    OnboardingScreen(onFinish = {}, paddingValues = innerPadding)
 //                    )
-                    NavigationGraph(rememberNavController())
+                NavigationGraph(rememberNavController(), chadventDatabaseViewModel)
 //                }
             }
         }
     }
 }
 
-@Composable
-fun Mytest(innerPaddingValues: PaddingValues) {
-    Button(onClick = {
-        Log.i("MYINFO", "nnfifbiobgiorbiorgbiogrbirgbegiroborei")
-    }) { }
 
-
-}
 
 @Composable
-fun OnboardingScreen(navController: NavHostController,onFinish: () -> Unit, ) {
+fun OnboardingScreen(navController: NavHostController, onFinish: () -> Unit) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { 3 })
     val pages = listOf(
@@ -151,10 +152,7 @@ fun OnboardingScreen(navController: NavHostController,onFinish: () -> Unit, ) {
                 }
 
                 Button(onClick = {
-                    Log.i("MYINFO", "ddddddddddddddddddddddd")
-                    Log.i("MYINFO - current", pagerState.currentPage.toString())
-                    Log.i("MYINFO - size", pages.size.toString())
-                    scope.launch {
+                      scope.launch {
                         if (pagerState.currentPage < pages.size - 1) {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         } else {
@@ -204,14 +202,25 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun NavigationGraph(navController: NavHostController) {
+fun NavigationGraph(
+    navController: NavHostController,
+    chadventDatabaseViewModel: ChadventDatabaseViewModel
+) {
     NavHost(
         navController = navController,
         startDestination = "mainScreen"
     ) {
-        composable("onboardingScreen") { OnboardingScreen(navController,{navController.navigate("login")}) }
-        composable("login") { LoginPage(navController) }
-        composable(route = "mainScreen") { MainScreen(navController)  }
+        composable("onboardingScreen") {
+            OnboardingScreen(navController,
+                { navController.navigate("login") })
+        }
+        composable("login") { LoginPage(navController, chadventDatabaseViewModel =  chadventDatabaseViewModel) }
+        composable(route = "mainScreen") {
+            MainScreen(
+                navController,
+                chadventDatabaseViewModel = chadventDatabaseViewModel
+            )
+        }
 //        composable("signUp") { SignUpPage(navController, innerPaddingValues) }
 //        composable("addRecipe") { AddRecipePage(navController, innerPaddingValues) }
     }
@@ -221,6 +230,6 @@ fun NavigationGraph(navController: NavHostController) {
 @Composable
 fun GreetingPreview() {
     ChadventMPCSTheme {
-        OnboardingScreen(navController = rememberNavController(),onFinish = {})
+        OnboardingScreen(navController = rememberNavController(), onFinish = {})
     }
 }

@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xita.chadventmpcs.dataSource.Repository
 import com.xita.chadventmpcs.models.Member
+import com.xita.chadventmpcs.models.User
 import com.xita.chadventmpcs.models.UserLogin
 import kotlinx.coroutines.launch
 
@@ -21,9 +22,9 @@ class LoginPageViewModel : ViewModel() {
     var isLoading by mutableStateOf(false)
 
 
-    init {
-        getMembers()
-    }
+//    init {
+//        getMembers()
+//    }
 
     fun usernameChange(newUsername: String) {
         username = newUsername
@@ -33,12 +34,16 @@ class LoginPageViewModel : ViewModel() {
         password = newPassword
     }
 
-    fun logUserIn() {
+    fun logUserIn(onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
-                val response = repository.logUserIn(UserLogin(username,password))
+                val response = repository.logUserIn(UserLogin(username, password))
+                val loggedInUser: User? = response.user
 
-              Log.i("MYINFO",response.toString())
+                if (loggedInUser == null) {
+                    getMembers(onSuccess)
+                }
+                Log.i("MYINFO", response.toString())
             } catch (e: Exception) {
                 Log.i("MYEXCEPTION", e.localizedMessage)
             } finally {
@@ -47,15 +52,16 @@ class LoginPageViewModel : ViewModel() {
         }
     }
 
-    fun getMembers() {
+    fun getMembers(onSuccess: () -> Unit) {
+
         viewModelScope.launch {
             try {
                 val response = repository.getMembers()
                 membersResponse.clear()
                 membersResponse.addAll(response)
-
+onSuccess()
                 for (i in membersResponse) {
-                    Log.i("MYINFO", i.toString())
+//                    Log.i("MYINFO", i.toString())
                 }
             } catch (e: Exception) {
                 Log.i("MYEXCEPTION", e.localizedMessage)

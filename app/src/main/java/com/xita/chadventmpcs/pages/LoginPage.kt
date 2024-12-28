@@ -23,6 +23,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,14 +46,19 @@ import com.xita.chadventmpcs.R
 import com.xita.chadventmpcs.dataSource.api.RetrofitInstance
 import com.xita.chadventmpcs.models.Member
 import com.xita.chadventmpcs.ui.theme.Purple40
+import com.xita.chadventmpcs.viewModels.ChadventDatabaseViewModel
 import com.xita.chadventmpcs.viewModels.LoginPageViewModel
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun LoginPage(
-    navController: NavController, loginPageViewModel: LoginPageViewModel = viewModel()
+    navController: NavController,
+    loginPageViewModel: LoginPageViewModel = viewModel(),
+    chadventDatabaseViewModel: ChadventDatabaseViewModel
 ) {
+    val members by chadventDatabaseViewModel.allMembers.collectAsState(initial = emptyList())
 
     Scaffold { innerPadding ->
         Box(
@@ -152,7 +159,20 @@ fun LoginPage(
                                     .border(3.dp, Purple40, RoundedCornerShape(40))
                                     .padding(12.dp)
                                     .clickable(onClick = {
-                                        loginPageViewModel.logUserIn()
+
+//                                         chadventDatabaseViewModel.allUsers.collect {
+//
+//                                        }
+                                        loginPageViewModel.logUserIn(fun() {
+
+                                            loginPageViewModel.membersResponse.forEach { member ->
+                                                chadventDatabaseViewModel.addMember(
+                                                    member
+                                                )
+
+                                            }
+
+                                        })
                                         navController.navigate("mainScreen")
 //                                    loginPageViewModel.getMembers()
 //                                    val members = remember { mutableStateListOf<Member>() }
@@ -211,5 +231,5 @@ fun LoginPage(
 @Preview(showBackground = true)
 @Composable
 fun LoginPagePreview() {
-    LoginPage(rememberNavController())
+    LoginPage(rememberNavController(), chadventDatabaseViewModel = viewModel())
 }

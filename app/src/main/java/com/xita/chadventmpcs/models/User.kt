@@ -8,4 +8,4 @@ data class User(
     val __v: Int
 )
 
-data class UserResponse(val message:String,val user:User)
+data class UserResponse(val message:String,val user:User?)
