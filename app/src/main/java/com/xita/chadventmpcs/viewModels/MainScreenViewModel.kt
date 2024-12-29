@@ -6,9 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 class MainScreenViewModel : ViewModel() {
-    var homeSelected by mutableStateOf(false)
+    var homeSelected by mutableStateOf(true)
     var transactionsSelected by mutableStateOf(false)
-    var contactsSelected by mutableStateOf(true)
+    var contactsSelected by mutableStateOf(false)
     var settingsSelected by mutableStateOf(false)
 
     fun onHomeNavSelected() {

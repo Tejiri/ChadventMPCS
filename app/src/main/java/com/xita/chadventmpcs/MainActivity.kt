@@ -60,8 +60,10 @@ class MainActivity : ComponentActivity() {
 
         val database = CHadventLocalDatabaseProvider.getDatabase(applicationContext)
         val memberDao = database.memberDao()
+        val accountDao = database.accountDao()
+        val transactionDao = database.transactionDao()
 
-        val chadventDatabaseViewModel = ChadventDatabaseViewModel(memberDao)
+        val chadventDatabaseViewModel = ChadventDatabaseViewModel(memberDao = memberDao,accountDao = accountDao, transactionDao = transactionDao)
         setContent {
             ChadventMPCSTheme {
 //                Scaffold(
@@ -208,7 +210,7 @@ fun NavigationGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = "mainScreen"
+        startDestination = "login"
     ) {
         composable("onboardingScreen") {
             OnboardingScreen(navController,

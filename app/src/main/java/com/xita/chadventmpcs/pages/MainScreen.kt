@@ -3,13 +3,7 @@ package com.xita.chadventmpcs.pages
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -104,13 +98,13 @@ fun MainScreen(
 @Composable
 fun MainScreenContent(innerPaddingValues: PaddingValues, mainScreenViewModel: MainScreenViewModel,chadventDatabaseViewModel: ChadventDatabaseViewModel) {
     if (mainScreenViewModel.homeSelected) {
-        HomePage(innerPaddingValues)
+        HomeScreen(innerPaddingValues,chadventDatabaseViewModel = chadventDatabaseViewModel)
     } else if (mainScreenViewModel.transactionsSelected) {
-        TransactionsPage(innerPaddingValues)
+        TransactionsScreen(innerPaddingValues,chadventDatabaseViewModel = chadventDatabaseViewModel)
     } else if (mainScreenViewModel.contactsSelected) {
-        ContactsPage(innerPaddingValues,chadventDatabaseViewModel)
+        ContactsScreen(innerPaddingValues,chadventDatabaseViewModel = chadventDatabaseViewModel)
     } else {
-        SettingsPage(innerPaddingValues)
+        SettingsScreen(innerPaddingValues)
     }
 }
 

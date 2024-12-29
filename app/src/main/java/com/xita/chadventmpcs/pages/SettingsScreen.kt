@@ -6,12 +6,12 @@ import androidx.compose.ui.tooling.preview.Preview
 
 
 @Composable
-fun SettingsPage(innerPadding: PaddingValues){
+fun SettingsScreen(innerPadding: PaddingValues){
 
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewSettingsPage(){
+fun PreviewSettingsScreen(){
 
 }

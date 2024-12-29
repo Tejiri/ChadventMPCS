@@ -164,16 +164,34 @@ fun LoginPage(
 //
 //                                        }
                                         loginPageViewModel.logUserIn(fun() {
-
                                             loginPageViewModel.membersResponse.forEach { member ->
+                                                if (member.username == loginPageViewModel.user?.username){
+                                                    chadventDatabaseViewModel.updateLoggedInUser(member)
+                                                }
                                                 chadventDatabaseViewModel.addMember(
                                                     member
                                                 )
 
                                             }
 
+                                            loginPageViewModel.accountsResponse.forEach({ account ->
+                                                if (account.username == loginPageViewModel.user?.username) {
+                                                    chadventDatabaseViewModel.addAccount(account)
+
+                                                    Log.i("MYINFO - ID SAME","ID Matches")
+                                                    account.transactions.forEach({ transaction ->
+                                                        Log.i("MYINFO",transaction.toString())
+                                                        chadventDatabaseViewModel.addTransaction(
+                                                            transaction
+                                                        )
+                                                    })
+
+                                                }
+                                            })
+
+                                              navController.navigate("mainScreen")
                                         })
-                                        navController.navigate("mainScreen")
+
 //                                    loginPageViewModel.getMembers()
 //                                    val members = remember { mutableStateListOf<Member>() }
 //                                    LaunchedEffect(Unit) {
