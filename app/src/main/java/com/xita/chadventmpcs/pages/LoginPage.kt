@@ -2,41 +2,31 @@ package com.xita.chadventmpcs.pages
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -45,16 +35,11 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.xita.chadventmpcs.R
 import com.xita.chadventmpcs.constants.Constants
 import com.xita.chadventmpcs.customComponents.CustomFormComposables
-import com.xita.chadventmpcs.dataSource.api.RetrofitInstance
-import com.xita.chadventmpcs.models.Member
-import com.xita.chadventmpcs.ui.theme.Purple40
+import com.xita.chadventmpcs.customComponents.UIComponents
 import com.xita.chadventmpcs.viewModels.ChadventDatabaseViewModel
 import com.xita.chadventmpcs.viewModels.LoginPageViewModel
-import kotlinx.coroutines.flow.forEach
-import kotlinx.coroutines.launch
 
 
-Add error dialogs for login page if issue occurs
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun LoginPage(
@@ -133,7 +118,9 @@ fun LoginPage(
                                     loginPageViewModel.usernameChange(
                                         username
                                     )
-                                }, obscureText = false
+                                },
+                                placeholder = "Username",
+                                obscureText = false
                             )
 
                             CustomFormComposables().CustomTextField(
@@ -141,54 +128,57 @@ fun LoginPage(
                                     loginPageViewModel.passwordChange(
                                         password
                                     )
-                                }, obscureText = true
+                                },
+                                placeholder = "Password",
+                                obscureText = true
                             )
 
                             CustomFormComposables().CustomButton(
                                 onclick = {
 
-                                    loginPageViewModel.logUserIn(onSuccess = fun() {
-                                        chadventDatabaseViewModel.clearTransactions()
-                                        chadventDatabaseViewModel.clearMembers()
-                                        chadventDatabaseViewModel.totalContribution = 0.00
+                                    loginPageViewModel.logUserIn(
+                                        onSuccess = fun() {
+                                            chadventDatabaseViewModel.clearTransactions()
+                                            chadventDatabaseViewModel.clearMembers()
+                                            chadventDatabaseViewModel.totalContribution = 0.00
 
-                                        loginPageViewModel.membersResponse.forEach { member ->
-                                            if (member.username == loginPageViewModel.user?.username) {
-                                                chadventDatabaseViewModel.updateLoggedInUser(
-                                                    member
-                                                )
-                                            } else {
-                                                chadventDatabaseViewModel.addMember(
-                                                    member
-                                                )
-                                            }
-                                        }
-
-                                        loginPageViewModel.accountsResponse.forEach({ account ->
-                                            if (account.username == loginPageViewModel.user?.username) {
-                                                chadventDatabaseViewModel.addAccount(account)
-
-                                                Log.i("MYINFO - ID SAME", "ID Matches")
-                                                account.transactions.forEach({ transaction ->
-
-                                                    if (transaction.account == Constants.Accounts.SHARE_CAPITAL
-                                                        || transaction.account == Constants.Accounts.THRIFT_SAVINGS
-                                                        || transaction.account == Constants.Accounts.SPECIAL_DEPOSIT
-                                                    ) {
-                                                        chadventDatabaseViewModel.totalContribution += transaction.amount.toDouble()
-                                                    }
-                                                    chadventDatabaseViewModel.addTransaction(
-                                                        transaction
+                                            loginPageViewModel.membersResponse.forEach { member ->
+                                                if (member.username == loginPageViewModel.user?.username) {
+                                                    chadventDatabaseViewModel.updateLoggedInUser(
+                                                        member
                                                     )
-                                                })
-
+                                                } else {
+                                                    chadventDatabaseViewModel.addMember(
+                                                        member
+                                                    )
+                                                }
                                             }
+
+                                            loginPageViewModel.accountsResponse.forEach({ account ->
+                                                if (account.username == loginPageViewModel.user?.username) {
+                                                    chadventDatabaseViewModel.addAccount(account)
+
+                                                    Log.i("MYINFO - ID SAME", "ID Matches")
+                                                    account.transactions.forEach({ transaction ->
+
+                                                        if (transaction.account == Constants.Accounts.SHARE_CAPITAL
+                                                            || transaction.account == Constants.Accounts.THRIFT_SAVINGS
+                                                            || transaction.account == Constants.Accounts.SPECIAL_DEPOSIT
+                                                        ) {
+                                                            chadventDatabaseViewModel.totalContribution += transaction.amount.toDouble()
+                                                        }
+                                                        chadventDatabaseViewModel.addTransaction(
+                                                            transaction
+                                                        )
+                                                    })
+
+                                                }
+                                            })
+
+                                            loginPageViewModel.isLoading = false
+
+                                            navController.navigate("mainScreen")
                                         })
-
-                                        loginPageViewModel.isLoading = false
-
-                                        navController.navigate("mainScreen")
-                                    })
 
                                 },
                                 isLoading = loginPageViewModel.isLoading,
@@ -203,6 +193,17 @@ fun LoginPage(
                             ) {
                                 Checkbox(checked = false, onCheckedChange = {})
                                 Text("Remember me", style = TextStyle(fontSize = 17.sp))
+                            }
+
+                            if (loginPageViewModel.isError) {
+                                UIComponents().BottomAlertDialog(
+                                    title = "Error",
+                                    message = loginPageViewModel.errorMessage,
+                                    isError = true
+                                ) {
+                                    loginPageViewModel.isError = false
+                                    loginPageViewModel.errorMessage = ""
+                                }
                             }
                         }
                     }

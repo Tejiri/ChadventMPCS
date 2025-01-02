@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -29,6 +30,7 @@ class CustomFormComposables {
     @Composable
     fun CustomTextField(
         value: String,
+        placeholder: String,
         onValueChange: (textFieldValue: String) -> Unit,
         obscureText: Boolean
     ) {
@@ -36,6 +38,7 @@ class CustomFormComposables {
             value = value,
             visualTransformation = if (obscureText) PasswordVisualTransformation() else VisualTransformation.None,
             onValueChange = onValueChange,
+            placeholder = { Text(placeholder) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 10.dp, bottom = 10.dp)

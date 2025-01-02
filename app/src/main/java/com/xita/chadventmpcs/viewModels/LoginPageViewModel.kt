@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,6 +22,8 @@ class LoginPageViewModel : ViewModel() {
     var password by mutableStateOf("")
     var user by mutableStateOf<User?>(null)
     var isLoading by mutableStateOf(false)
+    var isError by mutableStateOf(false)
+    var errorMessage by mutableStateOf("")
 
 
 //    init {
@@ -39,22 +40,32 @@ class LoginPageViewModel : ViewModel() {
 
     fun logUserIn(onSuccess: () -> Unit) {
         isLoading = true
-        viewModelScope.launch {
-            try {
-                val response = repository.logUserIn(UserLogin(username, password))
-                val loggedInUser: User? = response.user
+        if (username.isEmpty() || password.isEmpty()) {
+            isError = true
+            errorMessage = "Username or password cannot be empty"
+            isLoading = false
+        } else {
 
-                if (loggedInUser != null) {
-                    user = loggedInUser
-                    getMembersAndAccount(onSuccess)
+            viewModelScope.launch {
+                try {
+                    val response = repository.logUserIn(UserLogin(username, password))
+                    val loggedInUser: User? = response.user
+
+                    if (loggedInUser != null) {
+                        user = loggedInUser
+                        getMembersAndAccount(onSuccess)
+                    }
+
+                    Log.i("MYINFO", response.toString())
+                } catch (e: Exception) {
+                    isError = true
+                    errorMessage = e.localizedMessage
+                    Log.i("MYEXCEPTION", e.localizedMessage)
+
+                    isLoading = false
+                } finally {
+
                 }
-
-                Log.i("MYINFO", response.toString())
-            } catch (e: Exception) {
-                Log.i("MYEXCEPTION", e.localizedMessage)
-                isLoading = false
-            } finally {
-
             }
         }
     }
