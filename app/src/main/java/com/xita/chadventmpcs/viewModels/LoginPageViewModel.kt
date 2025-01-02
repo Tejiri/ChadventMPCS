@@ -38,6 +38,7 @@ class LoginPageViewModel : ViewModel() {
     }
 
     fun logUserIn(onSuccess: () -> Unit) {
+        isLoading = true
         viewModelScope.launch {
             try {
                 val response = repository.logUserIn(UserLogin(username, password))
@@ -47,9 +48,11 @@ class LoginPageViewModel : ViewModel() {
                     user = loggedInUser
                     getMembersAndAccount(onSuccess)
                 }
+
                 Log.i("MYINFO", response.toString())
             } catch (e: Exception) {
                 Log.i("MYEXCEPTION", e.localizedMessage)
+                isLoading = false
             } finally {
 
             }

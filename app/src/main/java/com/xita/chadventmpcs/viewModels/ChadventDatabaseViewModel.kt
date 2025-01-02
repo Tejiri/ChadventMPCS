@@ -15,6 +15,8 @@ import com.xita.chadventmpcs.models.User
 import com.xita.chadventmpcs.models.entities.AccountEntity
 import com.xita.chadventmpcs.models.entities.MemberEntity
 import com.xita.chadventmpcs.models.entities.TransactionEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
@@ -28,16 +30,30 @@ class ChadventDatabaseViewModel(
     val allTransactions: Flow<List<TransactionEntity>> = transactionDao.getTransactions()
     val allAccounts: Flow<List<AccountEntity>> = accountDao.getAllAccounts()
 
-//    var loggedInUser: User? = null
+    //    var loggedInUser: User? = null
     var loggedInMember by mutableStateOf<Member?>(null)
+    var totalContribution by mutableStateOf(0.00)
 
-    fun updateLoggedInUser(member: Member?){
+    fun updateLoggedInUser(member: Member?) {
         loggedInMember = member
     }
 
 //    fun getAccount(username:String):Flow<AccountEntity>{
 //        return accountDao.getAccountByUsername(username)
 //    }
+
+    fun clearTransactions() {
+        viewModelScope.launch {
+            transactionDao.clearTransactions()
+        }
+    }
+
+    fun clearMembers() {
+        viewModelScope.launch {
+            memberDao.clearMembers()
+        }
+
+    }
 
     fun addAccount(account: Account) {
         viewModelScope.launch {
@@ -59,6 +75,7 @@ class ChadventDatabaseViewModel(
 
     fun addTransaction(transaction: Transaction) {
         viewModelScope.launch {
+
             transactionDao.insert(
                 TransactionEntity(
                     _id = transaction._id,

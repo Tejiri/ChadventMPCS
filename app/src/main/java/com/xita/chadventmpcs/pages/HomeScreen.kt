@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.xita.chadventmpcs.R
+import com.xita.chadventmpcs.helpers.HelperFunctions
 import com.xita.chadventmpcs.models.Account
 import com.xita.chadventmpcs.models.entities.AccountEntity
 import com.xita.chadventmpcs.viewModels.ChadventDatabaseViewModel
@@ -73,19 +74,23 @@ fun HomeScreen(
 
                     Column(Modifier.weight(1f)) {
                         Text(
-                            "${chadventDatabaseViewModel.loggedInMember?.firstname + " "+ chadventDatabaseViewModel.loggedInMember?.lastname}",
+                            "${chadventDatabaseViewModel.loggedInMember?.firstname + " " + chadventDatabaseViewModel.loggedInMember?.lastname}",
                             style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp)
                         )
                         Text("Total Contributions", modifier = Modifier.padding(top = 5.dp))
                         Text(
-                            "₦300,000",
+                            "₦${HelperFunctions().formatWithCommas(chadventDatabaseViewModel.totalContribution.toString())}",
                             style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 25.sp)
                         )
                     }
 
-                    Image(modifier = Modifier
-                        .width(40.dp)
-                        .height(40.dp), painter = painterResource(R.drawable.notification), contentDescription = "")
+                    Image(
+                        modifier = Modifier
+                            .width(40.dp)
+                            .height(40.dp),
+                        painter = painterResource(R.drawable.notification),
+                        contentDescription = ""
+                    )
                 }
             }
 
@@ -98,14 +103,35 @@ fun HomeScreen(
                     .fillMaxWidth()
             ) {
                 LazyColumn {
-                    items(accounts){account->
-                        AccountSummary(text = "Share Capital",account.sharecapital)
-                        AccountSummary(text = "Fine",account.fine)
-                        AccountSummary(text = "Loan",account.loan)
-                        AccountSummary(text = "Thrift Savings",account.thriftsavings)
-                        AccountSummary(text = "Commodity Trading",account.commoditytrading)
-                        AccountSummary(text = "Project Financing",account.projectfinancing)
-                        AccountSummary(text = "Special Deposit Capital",account.specialdeposit)
+                    items(accounts) { account ->
+                        AccountSummary(
+                            text = "Share Capital",
+                            HelperFunctions().formatWithCommas(account.sharecapital)
+                        )
+                        AccountSummary(
+                            text = "Fine",
+                            HelperFunctions().formatWithCommas(account.fine)
+                        )
+                        AccountSummary(
+                            text = "Loan",
+                            HelperFunctions().formatWithCommas(account.loan)
+                        )
+                        AccountSummary(
+                            text = "Thrift Savings",
+                            HelperFunctions().formatWithCommas(account.thriftsavings)
+                        )
+                        AccountSummary(
+                            text = "Commodity Trading",
+                            HelperFunctions().formatWithCommas(account.commoditytrading)
+                        )
+                        AccountSummary(
+                            text = "Project Financing",
+                            HelperFunctions().formatWithCommas(account.projectfinancing)
+                        )
+                        AccountSummary(
+                            text = "Special Deposit Capital",
+                            HelperFunctions().formatWithCommas(account.specialdeposit)
+                        )
                     }
 //                    items(accounts) { account->
 //
@@ -119,7 +145,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun AccountSummary(text:String, total:String) {
+fun AccountSummary(text: String, total: String) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),

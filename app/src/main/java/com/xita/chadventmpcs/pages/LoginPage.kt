@@ -43,6 +43,8 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.xita.chadventmpcs.R
+import com.xita.chadventmpcs.constants.Constants
+import com.xita.chadventmpcs.customComponents.CustomFormComposables
 import com.xita.chadventmpcs.dataSource.api.RetrofitInstance
 import com.xita.chadventmpcs.models.Member
 import com.xita.chadventmpcs.ui.theme.Purple40
@@ -51,6 +53,8 @@ import com.xita.chadventmpcs.viewModels.LoginPageViewModel
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.launch
 
+
+Add error dialogs for login page if issue occurs
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun LoginPage(
@@ -123,111 +127,75 @@ fun LoginPage(
                         }
 
                         items(1) {
-                            OutlinedTextField(
-                                value = loginPageViewModel.username,
-                                onValueChange = { username ->
+
+                            CustomFormComposables().CustomTextField(
+                                value = loginPageViewModel.username, onValueChange = { username ->
                                     loginPageViewModel.usernameChange(
                                         username
                                     )
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 10.dp, bottom = 10.dp)
-                                    .background(Color.Gray.copy(alpha = 0.3f))
+                                }, obscureText = false
                             )
 
-                            OutlinedTextField(
-                                value = loginPageViewModel.password,
-                                onValueChange = { password ->
+                            CustomFormComposables().CustomTextField(
+                                value = loginPageViewModel.password, onValueChange = { password ->
                                     loginPageViewModel.passwordChange(
                                         password
                                     )
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 10.dp, bottom = 10.dp)
-                                    .background(Color.Gray.copy(alpha = 0.3f))
+                                }, obscureText = true
                             )
 
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 10.dp)
-                                    .clip(RoundedCornerShape(40))
-                                    .background(Purple40)
-//                                .background(if (transparent) Color.Transparent else Purple40, shape = RoundedCornerShape(40))
-                                    .border(3.dp, Purple40, RoundedCornerShape(40))
-                                    .padding(12.dp)
-                                    .clickable(onClick = {
+                            CustomFormComposables().CustomButton(
+                                onclick = {
 
-//                                         chadventDatabaseViewModel.allUsers.collect {
-//
-//                                        }
-                                        loginPageViewModel.logUserIn(fun() {
-                                            loginPageViewModel.membersResponse.forEach { member ->
-                                                if (member.username == loginPageViewModel.user?.username){
-                                                    chadventDatabaseViewModel.updateLoggedInUser(member)
-                                                }
+                                    loginPageViewModel.logUserIn(onSuccess = fun() {
+                                        chadventDatabaseViewModel.clearTransactions()
+                                        chadventDatabaseViewModel.clearMembers()
+                                        chadventDatabaseViewModel.totalContribution = 0.00
+
+                                        loginPageViewModel.membersResponse.forEach { member ->
+                                            if (member.username == loginPageViewModel.user?.username) {
+                                                chadventDatabaseViewModel.updateLoggedInUser(
+                                                    member
+                                                )
+                                            } else {
                                                 chadventDatabaseViewModel.addMember(
                                                     member
                                                 )
+                                            }
+                                        }
+
+                                        loginPageViewModel.accountsResponse.forEach({ account ->
+                                            if (account.username == loginPageViewModel.user?.username) {
+                                                chadventDatabaseViewModel.addAccount(account)
+
+                                                Log.i("MYINFO - ID SAME", "ID Matches")
+                                                account.transactions.forEach({ transaction ->
+
+                                                    if (transaction.account == Constants.Accounts.SHARE_CAPITAL
+                                                        || transaction.account == Constants.Accounts.THRIFT_SAVINGS
+                                                        || transaction.account == Constants.Accounts.SPECIAL_DEPOSIT
+                                                    ) {
+                                                        chadventDatabaseViewModel.totalContribution += transaction.amount.toDouble()
+                                                    }
+                                                    chadventDatabaseViewModel.addTransaction(
+                                                        transaction
+                                                    )
+                                                })
 
                                             }
-
-                                            loginPageViewModel.accountsResponse.forEach({ account ->
-                                                if (account.username == loginPageViewModel.user?.username) {
-                                                    chadventDatabaseViewModel.addAccount(account)
-
-                                                    Log.i("MYINFO - ID SAME","ID Matches")
-                                                    account.transactions.forEach({ transaction ->
-                                                        Log.i("MYINFO",transaction.toString())
-                                                        chadventDatabaseViewModel.addTransaction(
-                                                            transaction
-                                                        )
-                                                    })
-
-                                                }
-                                            })
-
-                                              navController.navigate("mainScreen")
                                         })
 
-//                                    loginPageViewModel.getMembers()
-//                                    val members = remember { mutableStateListOf<Member>() }
-//                                    LaunchedEffect(Unit) {
-//                                        try {
-//                                            val response = RetrofitInstance.chadventAPI.getMembers(apiKey)
-//                                            if (response.isSuccessful) {
-//                                                members.addAll(response.body() ?: emptyList())
-//                                            } else {
-//                                                Log.e("API_ERROR", "Error: ${response.code()} - ${response.message()}")
-//                                            }
-//                                        } catch (e: Exception) {
-//                                            Log.e("NETWORK_ERROR", "Exception: ${e.localizedMessage}")
-//                                        }
-//                                    }
-                                    }),
+                                        loginPageViewModel.isLoading = false
 
-                                ) {
+                                        navController.navigate("mainScreen")
+                                    })
 
-                                Text(
-                                    "Login",
-                                    color = Color.White,
-                                    modifier = Modifier.align(alignment = Alignment.Center),
-                                    style = TextStyle(fontSize = 25.sp)
+                                },
+                                isLoading = loginPageViewModel.isLoading,
+                                buttonText = "Login",
+
                                 )
 
-//                            if (isLoading) CircularProgressIndicator(
-//                                modifier = Modifier
-//                                    .align(alignment = Alignment.Center), color = Color.White
-//                            ) else Text(
-//                                text,
-//                                color = if (transparent) Purple40 else Color.White,
-//                                modifier = Modifier
-//                                    .align(alignment = Alignment.Center),
-//                                style = TextStyle(fontSize = 25.sp)
-//                            )
-                            }
 
                             Row(
                                 horizontalArrangement = Arrangement.Center,

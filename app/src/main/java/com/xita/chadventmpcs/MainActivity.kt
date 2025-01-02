@@ -223,8 +223,6 @@ fun NavigationGraph(
                 chadventDatabaseViewModel = chadventDatabaseViewModel
             )
         }
-//        composable("signUp") { SignUpPage(navController, innerPaddingValues) }
-//        composable("addRecipe") { AddRecipePage(navController, innerPaddingValues) }
     }
 }
 

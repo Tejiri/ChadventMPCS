@@ -18,4 +18,7 @@ interface MemberDao {
 
     @Query("SELECT * from members ORDER BY firstname ASC")
     fun getAllMembers(): Flow<List<MemberEntity>>
+
+    @Query("DELETE FROM members")
+    suspend fun clearMembers()
 }
