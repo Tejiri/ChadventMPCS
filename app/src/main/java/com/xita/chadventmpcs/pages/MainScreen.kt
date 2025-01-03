@@ -1,6 +1,8 @@
 package com.xita.chadventmpcs.pages
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -28,6 +30,10 @@ fun MainScreen(
     mainScreenViewModel: MainScreenViewModel = viewModel(),
     chadventDatabaseViewModel: ChadventDatabaseViewModel
 ) {
+
+    BackHandler {
+
+    }
 
     Scaffold(
         bottomBar = {
@@ -91,20 +97,28 @@ fun MainScreen(
         }) { innerPadding ->
 
 
-        MainScreenContent(innerPadding, mainScreenViewModel,chadventDatabaseViewModel)
+        MainScreenContent(innerPadding, mainScreenViewModel, chadventDatabaseViewModel,navController = navController)
     }
 }
 
 @Composable
-fun MainScreenContent(innerPaddingValues: PaddingValues, mainScreenViewModel: MainScreenViewModel,chadventDatabaseViewModel: ChadventDatabaseViewModel) {
+fun MainScreenContent(
+    innerPaddingValues: PaddingValues,
+    mainScreenViewModel: MainScreenViewModel,
+    chadventDatabaseViewModel: ChadventDatabaseViewModel,
+    navController: NavController,
+) {
     if (mainScreenViewModel.homeSelected) {
-        HomeScreen(innerPaddingValues,chadventDatabaseViewModel = chadventDatabaseViewModel)
+        HomeScreen(innerPaddingValues, chadventDatabaseViewModel = chadventDatabaseViewModel)
     } else if (mainScreenViewModel.transactionsSelected) {
-        TransactionsScreen(innerPaddingValues,chadventDatabaseViewModel = chadventDatabaseViewModel)
+        TransactionsScreen(
+            innerPaddingValues,
+            chadventDatabaseViewModel = chadventDatabaseViewModel
+        )
     } else if (mainScreenViewModel.contactsSelected) {
-        ContactsScreen(innerPaddingValues,chadventDatabaseViewModel = chadventDatabaseViewModel)
+        ContactsScreen(innerPaddingValues, chadventDatabaseViewModel = chadventDatabaseViewModel)
     } else {
-        SettingsScreen(innerPaddingValues)
+        SettingsScreen(innerPaddingValues, navController = navController)
     }
 }
 

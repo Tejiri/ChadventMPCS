@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -99,7 +100,8 @@ fun LoginPage(
                         Modifier
                             .fillMaxWidth()
                             .fillMaxSize()
-                            .padding(15.dp),
+                            .padding(15.dp)
+                            .imePadding(),
                         verticalArrangement = Arrangement.Center
                     ) {
                         item {
@@ -177,7 +179,10 @@ fun LoginPage(
 
                                             loginPageViewModel.isLoading = false
 
-                                            navController.navigate("mainScreen")
+                                            navController.navigate("mainScreen"){
+//                                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+
+                                            }
                                         })
 
                                 },

@@ -65,7 +65,7 @@ class MainActivity : ComponentActivity() {
 
         val chadventDatabaseViewModel = ChadventDatabaseViewModel(memberDao = memberDao,accountDao = accountDao, transactionDao = transactionDao)
         setContent {
-            ChadventMPCSTheme {
+            ChadventMPCSTheme(darkTheme = false) {
 //                Scaffold(
 //                    modifier = Modifier.fillMaxSize(),
 //                    bottomBar = { NavigationBar{
@@ -210,7 +210,7 @@ fun NavigationGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = "login"
+        startDestination = "onboardingScreen"
     ) {
         composable("onboardingScreen") {
             OnboardingScreen(navController,
