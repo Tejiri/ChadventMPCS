@@ -37,6 +37,7 @@ import com.xita.chadventmpcs.R
 import com.xita.chadventmpcs.constants.Constants
 import com.xita.chadventmpcs.customComponents.CustomFormComposables
 import com.xita.chadventmpcs.customComponents.UIComponents
+import com.xita.chadventmpcs.ui.theme.BlueBackground
 import com.xita.chadventmpcs.viewModels.ChadventDatabaseViewModel
 import com.xita.chadventmpcs.viewModels.LoginPageViewModel
 
@@ -59,7 +60,7 @@ fun LoginPage(
             Box(
                 Modifier
                     .fillMaxSize()
-                    .background(Color.Blue.copy(alpha = 0.5f))
+                    .background(BlueBackground)
             ) {
 
 
