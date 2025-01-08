@@ -303,20 +303,20 @@ fun NavigationGraph(
 
 @Composable
 fun SplashScreen(navController: androidx.navigation.NavController) {
-    var isVisible by remember { mutableStateOf(false) }
-
-    val alpha by animateFloatAsState(
-        targetValue = if (isVisible) 1f else 0f,
-        animationSpec = tween(durationMillis = 1500, easing = LinearOutSlowInEasing) // 1.5-second animation
-    )
-    val scale by animateFloatAsState(
-        targetValue = if (isVisible) 1.2f else 0.8f, // Slightly scale up
-        animationSpec = tween(durationMillis = 1500, easing = FastOutSlowInEasing)
-    )
+//    var isVisible by remember { mutableStateOf(false) }
+//
+//    val alpha by animateFloatAsState(
+//        targetValue = if (isVisible) 1f else 0f,
+//        animationSpec = tween(durationMillis = 1500, easing = LinearOutSlowInEasing) // 1.5-second animation
+//    )
+//    val scale by animateFloatAsState(
+//        targetValue = if (isVisible) 1.2f else 0.8f, // Slightly scale up
+//        animationSpec = tween(durationMillis = 1500, easing = FastOutSlowInEasing)
+//    )
 
     LaunchedEffect(Unit) {
-        isVisible = true
-        delay(4000) // 4-second delay
+//        isVisible = true
+        delay(3000) // 4-second delay
         navController.navigate("onboardingScreen") {
             popUpTo("splash") { inclusive = true }
         }
@@ -332,8 +332,8 @@ fun SplashScreen(navController: androidx.navigation.NavController) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .alpha(alpha)
-                    .scale(scale)
+//                    .alpha(alpha)
+//                    .scale(scale)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.chadvent_logo),
@@ -341,17 +341,32 @@ fun SplashScreen(navController: androidx.navigation.NavController) {
                     modifier = Modifier.size(100.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Chadvent Multipurpose Cooperative Society",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp), // Ensures margin from screen edges
-                    maxLines = 2, // Ensures text doesn't overflow into multiple lines unnecessarily
-                    softWrap = true // Wraps text automatically
-                )
+                Column {
+                    Text(
+                        text = "Chadvent Multipurpose Cooperative",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp), // Ensures margin from screen edges
+                        maxLines = 2, // Ensures text doesn't overflow into multiple lines unnecessarily
+                        softWrap = true // Wraps text automatically
+                    )
+
+                    Text(
+                        text = "Society",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp), // Ensures margin from screen edges
+                        maxLines = 2, // Ensures text doesn't overflow into multiple lines unnecessarily
+                        softWrap = true // Wraps text automatically
+                    )
+                }
+
             }
         }
     }
